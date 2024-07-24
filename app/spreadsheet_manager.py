@@ -49,20 +49,20 @@ class SpreadSheetManager:
         df = df.sort_index()
 
         # Apply formatting rules
-        consecutive_rule = FormattingRuleFactory.consecutive_change_rule(
+        consecutive_rule = FormattingRuleFactory().consecutive_change_rule(
             user_input["consecutive_change"]["days"],
             user_input["consecutive_change"]["direction"],
             "percent_change",
             FormatStyle("percent_change", "yellow", bold=True)
         )
         
-        threshold_rule = FormattingRuleFactory.threshold_change_rule(
+        threshold_rule = FormattingRuleFactory().threshold_change_rule(
             user_input["daily_threshold"]["percent"],
             "percent_change",
             FormatStyle("percent_change", "red" if user_input["daily_threshold"]["direction"] == "higher" else "green", bold=True)
         )
         
-        cumulative_rule = FormattingRuleFactory.cumulative_change_rule(
+        cumulative_rule = FormattingRuleFactory().cumulative_change_rule(
             user_input["period_change"]["days"],
             user_input["period_change"]["percent"],
             ["open", "high", "low", "close"],
@@ -76,17 +76,17 @@ class SpreadSheetManager:
             workbook = writer.book
             worksheet = writer.sheets['Stock Data']
 
-        # Apply formatting
-        for rule in [consecutive_rule, threshold_rule, cumulative_rule]:
-            formatting = rule.apply(stock_data)
-            for date, style in formatting.items():
-                if style:
-                    row = df.index.get_loc(date) + 2  # +2 because Excel is 1-indexed and we have a header row
-                    cols = [df.columns.get_loc(col) + 1 for col in style.columns] if isinstance(style.columns, list) else [df.columns.get_loc(style.columns) + 1]
-                    for col in cols:
-                        cell = worksheet.cell(row=row, column=col)
-                        cell.fill = PatternFill(start_color=color_map[style.background_color], end_color=color_map[style.background_color], fill_type="solid")
-                        cell.font = Font(color=color_map[style.font_color], bold=style.bold)
+            # Apply formatting
+            for rule in [consecutive_rule, threshold_rule, cumulative_rule]:
+                formatting = rule.apply(stock_data_filtered)
+                for date, style in formatting.items():
+                    if style:
+                        row = df.index.get_loc(date) + 2  # +2 because Excel is 1-indexed and we have a header row
+                        cols = [df.columns.get_loc(col) + 1 for col in style.columns] if isinstance(style.columns, list) else [df.columns.get_loc(style.columns) + 1]
+                        for col in cols:
+                            cell = worksheet.cell(row=row, column=col)
+                            cell.fill = PatternFill(start_color=color_map[style.background_color], end_color=color_map[style.background_color], fill_type="solid")
+                            cell.font = Font(color=color_map[style.font_color], bold=style.bold)
 
             # Auto-adjust column widths
             for column in worksheet.columns:

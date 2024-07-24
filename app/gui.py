@@ -1,3 +1,4 @@
+from app.spreadsheet_manager import SpreadSheetManager
 import tkinter as tk
 from tkinter import ttk, messagebox
 from tkcalendar import DateEntry
@@ -8,6 +9,8 @@ class GUI:
         self.root = tk.Tk()
         self.root.title("Josh Hansen's Epic Stock Tracker")
         self.root.geometry("400x500")
+
+        self.spreadsheet_manager = SpreadSheetManager("B3DCQB3M4469Z8IV")
 
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill=tk.BOTH, expand=True)
@@ -24,25 +27,22 @@ class GUI:
         ttk.Label(basic_frame, text="Stock Symbol:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
         self.symbol_entry = ttk.Entry(basic_frame)
         self.symbol_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.symbol_entry.insert(0, "IBM")  # Default value
 
         ttk.Label(basic_frame, text="Start Date:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
-        self.start_date = DateEntry(basic_frame, width=12, background='darkblue', foreground='white', date_pattern='yyyy-mm-dd')
+        self.start_date = DateEntry(basic_frame, width=12, background='darkblue', foreground='white', 
+                                    date_pattern='yyyy-mm-dd', maxdate=date.today() - timedelta(days=2))
         self.start_date.grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.start_date.set_date(date.today() - timedelta(days=30))  # Default value
 
         ttk.Label(basic_frame, text="End Date:").grid(row=2, column=0, sticky=tk.W, padx=5, pady=5)
-        self.end_date = DateEntry(basic_frame, width=12, background='darkblue', foreground='white', date_pattern='yyyy-mm-dd')
+        self.end_date = DateEntry(basic_frame, width=12, background='darkblue', foreground='white', 
+                                  date_pattern='yyyy-mm-dd', maxdate=date.today() - timedelta(days=1))
         self.end_date.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.end_date.set_date(date.today())  # Default value
 
         basic_frame.columnconfigure(1, weight=1)
-
-        self.start_date = DateEntry(basic_frame, width=12, background='darkblue', foreground='white', 
-                                date_pattern='yyyy-mm-dd', maxdate=date.today() - timedelta(days=2))
-        self.start_date.grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
         self.start_date.bind("<<DateEntrySelected>>", self.update_end_date_min)
-
-        self.end_date = DateEntry(basic_frame, width=12, background='darkblue', foreground='white', 
-                                date_pattern='yyyy-mm-dd', maxdate=date.today() - timedelta(days=1))
-        self.end_date.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
 
     def update_end_date_min(self, event):
         self.end_date.config(mindate=self.start_date.get_date())
@@ -54,6 +54,7 @@ class GUI:
         ttk.Label(cons_frame, text="Consecutive Days:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
         self.cons_days_entry = ttk.Entry(cons_frame)
         self.cons_days_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.cons_days_entry.insert(0, "5")  # Default value
 
         ttk.Label(cons_frame, text="Direction:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
         self.cons_direction = tk.StringVar(value="positive")
@@ -69,6 +70,7 @@ class GUI:
         ttk.Label(daily_frame, text="Percent Threshold:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
         self.daily_threshold_entry = ttk.Entry(daily_frame)
         self.daily_threshold_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.daily_threshold_entry.insert(0, "2.5")  # Default value
 
         ttk.Label(daily_frame, text="Direction:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
         self.daily_direction = tk.StringVar(value="higher")
@@ -84,10 +86,12 @@ class GUI:
         ttk.Label(period_frame, text="Percent Threshold:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
         self.period_threshold_entry = ttk.Entry(period_frame)
         self.period_threshold_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.period_threshold_entry.insert(0, "10.0")  # Default value
 
         ttk.Label(period_frame, text="Number of Days:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
         self.period_days_entry = ttk.Entry(period_frame)
         self.period_days_entry.grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        self.period_days_entry.insert(0, "30")  # Default value
 
         period_frame.columnconfigure(1, weight=1)
 
@@ -145,8 +149,7 @@ class GUI:
     def fetch_data(self):
         if self.validate_inputs():
             user_input = self.get_user_input()
-            print("User input:", user_input)
-            # Here you would call the appropriate method in your main application to fetch and process the data
+            self.spreadsheet_manager.process_and_open(user_input)
         else:
             print("Input validation failed")
 
@@ -154,8 +157,3 @@ class GUI:
         self.fetch_button = ttk.Button(self.root, text="Fetch and Process Data", command=self.fetch_data)
         self.fetch_button.pack(pady=10)
         self.root.mainloop()
-
-# For testing purposes
-if __name__ == "__main__":
-    gui = GUI()
-    gui.run()

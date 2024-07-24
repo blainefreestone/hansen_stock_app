@@ -48,7 +48,6 @@ class FormattingRuleFactory:
     def cumulative_change_rule(num_days: int, percent_threshold: float, columns: Union[str, List[str]], format_style: FormatStyle) -> FormattingRule:
         def condition(data, date):
             cumulative_changes = DataProcessor.check_cumulative_change(data, num_days, percent_threshold)
-            print(cumulative_changes)
             return cumulative_changes.get(date, False)
         
         style_dict = format_style.__dict__.copy()

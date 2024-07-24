@@ -97,7 +97,7 @@ class DataProcessor:
         Returns:
             Dict[datetime, bool]: Dictionary of dates and boolean indicating if the condition is met.
         """
-        sorted_dates = sorted(data.keys())
+        sorted_dates = sorted(key for key in data.keys() if key != 'stock_symbol')
         result = {date: False for date in sorted_dates}
         
         for i in range(len(sorted_dates) - num_days + 1):

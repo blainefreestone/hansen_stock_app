@@ -19,10 +19,10 @@ class FormattingRule:
         Apply the formatting rule to the data.
 
         Args:
-            data (Dict[datetime, Dict[str, float]]): Dictionary of dates and their stock data.
+            data (Dict[datetime, Dict[str, float]]): Dictionary of sorted_dates and their stock data.
 
         Returns:
-            Dict[datetime, FormatStyle]: Dictionary of dates and their corresponding FormatStyle.
+            Dict[datetime, FormatStyle]: Dictionary of sorted_dates and their corresponding FormatStyle.
         """
         return {date: self.format_style if self.condition(data, date) else None
                 for date in data.keys()}
@@ -31,13 +31,13 @@ class FormattingRuleFactory:
     @staticmethod
     def consecutive_change_rule(num_days: int, direction: str, columns: Union[str, List[str]], format_style: FormatStyle) -> FormattingRule:
         def condition(data, date):
-            dates = sorted(data.keys())
-            if date not in dates:
+            sorted_dates = sorted(key for key in data.keys() if key != 'stock_symbol')
+            if date not in sorted_dates:
                 return False
-            index = dates.index(date)
+            index = sorted_dates.index(date)
             if index < num_days - 1:
                 return False
-            changes = [data[dates[i]]['percent_change'] for i in range(index - num_days + 1, index + 1)]
+            changes = [data[sorted_dates[i]].get('percent_change', 0) for i in range(index - num_days + 1, index + 1)]
             return all(change > 0 if direction == 'positive' else change < 0 for change in changes)
         
         style_dict = format_style.__dict__.copy()
@@ -48,7 +48,7 @@ class FormattingRuleFactory:
     @staticmethod
     def threshold_change_rule(percent_threshold: float, columns: Union[str, List[str]], format_style: FormatStyle) -> FormattingRule:
         def condition(data, date):
-            return abs(data[date]['percent_change']) >= abs(percent_threshold)
+            return abs(data[date]['percent_change']) >= abs(percent_threshold) if 'percent_change' in data[date] else False
         
         style_dict = format_style.__dict__.copy()
         style_dict.pop('columns', None)
@@ -58,13 +58,13 @@ class FormattingRuleFactory:
     @staticmethod
     def cumulative_change_rule(num_days: int, percent_threshold: float, columns: Union[str, List[str]], format_style: FormatStyle) -> FormattingRule:
         def condition(data, date):
-            dates = sorted(data.keys())
-            if date not in dates:
+            sorted_dates = sorted(key for key in data.keys() if key != 'stock_symbol')
+            if date not in sorted_dates:
                 return False
-            index = dates.index(date)
+            index = sorted_dates.index(date)
             if index < num_days - 1:
                 return False
-            start_price = data[dates[index - num_days + 1]]['close']
+            start_price = data[sorted_dates[index - num_days + 1]]['close']
             end_price = data[date]['close']
             cumulative_change = (end_price - start_price) / start_price * 100
             return abs(cumulative_change) >= abs(percent_threshold)

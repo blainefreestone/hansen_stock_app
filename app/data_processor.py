@@ -30,9 +30,8 @@ class DataProcessor:
         Returns:
             Dict[datetime, float]: Dictionary of dates and their percent changes.
         """
-        sorted_dates = sorted(data.keys())
+        sorted_dates = sorted(key for key in data.keys() if key != 'stock_symbol')
         percent_changes = {}
-        
         for i in range(1, len(sorted_dates)):
             current_date = sorted_dates[i]
             previous_date = sorted_dates[i-1]

@@ -44,20 +44,35 @@ def test_consecutive_change_rule():
     assert result[datetime(2023, 1, 6)] == style
     assert result[datetime(2023, 1, 7)] == style
 
-def test_threshold_change_rule():
+def test_positive_threshold_change_rule():
     factory = FormattingRuleFactory()
     style = FormatStyle(columns="percent_change", background_color="red")
-    rule = factory.threshold_change_rule(2.5, "percent_change", style)
+    rule = factory.threshold_change_rule(1.8, "positive", "percent_change", style)
     
     result = rule.apply(test_data)
     
     assert result[datetime(2023, 1, 1)] is None
-    assert result[datetime(2023, 1, 2)] is None
+    assert result[datetime(2023, 1, 2)] == style
     assert result[datetime(2023, 1, 3)] == style
     assert result[datetime(2023, 1, 4)] is None
     assert result[datetime(2023, 1, 5)] == style
     assert result[datetime(2023, 1, 6)] == style
     assert result[datetime(2023, 1, 7)] == style
+
+def test_negative_threshold_change_rule():
+    factory = FormattingRuleFactory()
+    style = FormatStyle(columns="percent_change", background_color="red")
+    rule = factory.threshold_change_rule(1.8, "negative", "percent_change", style)
+    
+    result = rule.apply(test_data)
+    
+    assert result[datetime(2023, 1, 1)] is None
+    assert result[datetime(2023, 1, 2)] is None
+    assert result[datetime(2023, 1, 3)] is None
+    assert result[datetime(2023, 1, 4)] == style
+    assert result[datetime(2023, 1, 5)] is None
+    assert result[datetime(2023, 1, 6)] is None
+    assert result[datetime(2023, 1, 7)] is None
 
 def test_cumulative_change_rule():
     factory = FormattingRuleFactory()

@@ -86,12 +86,12 @@ class GUI:
         ttk.Label(period_frame, text="Percent Threshold:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
         self.period_threshold_entry = ttk.Entry(period_frame)
         self.period_threshold_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
-        self.period_threshold_entry.insert(0, "10.0")  # Default value
+        self.period_threshold_entry.insert(0, "5")  # Default value
 
         ttk.Label(period_frame, text="Number of Days:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
         self.period_days_entry = ttk.Entry(period_frame)
         self.period_days_entry.grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
-        self.period_days_entry.insert(0, "30")  # Default value
+        self.period_days_entry.insert(0, "5")  # Default value
 
         period_frame.columnconfigure(1, weight=1)
 

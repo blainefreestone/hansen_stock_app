@@ -48,7 +48,7 @@ def test_check_consecutive_changes(sample_data):
 
 def test_check_threshold_change(sample_data):
     percent_changes = {date: data['percent_change'] for date, data in sample_data.items() if date != datetime(2023, 1, 1)}
-    result = DataProcessor.check_threshold_change(percent_changes, 3.0)
+    result = DataProcessor.check_threshold_change(percent_changes, 3.0, 'positive')
     expected = {
         datetime(2023, 1, 2): False,
         datetime(2023, 1, 3): False,

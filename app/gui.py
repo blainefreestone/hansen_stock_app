@@ -1,6 +1,6 @@
 from app.spreadsheet_manager import SpreadSheetManager
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 from tkcalendar import DateEntry
 from datetime import date, timedelta
 import os
@@ -25,6 +25,9 @@ class GUI:
 
         if not self.api_key:
             self.prompt_for_api_key()
+
+        self.file_path = None
+        self.prompt_for_file_path()
 
         self.spreadsheet_manager = SpreadSheetManager(self.api_key)
 
@@ -52,6 +55,15 @@ class GUI:
         
         ttk.Button(api_key_prompt, text="Save", command=save_key).grid(row=1, column=0, columnspan=2, pady=10)
         self.root.wait_window(api_key_prompt)
+
+    def prompt_for_file_path(self):
+        self.file_path = filedialog.asksaveasfilename(
+            defaultextension=".xlsx",
+            filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")]
+        )
+        if not self.file_path:
+            messagebox.showerror("Error", "File path is required")
+            self.root.destroy()
 
     def create_basic_input_frame(self):
         basic_frame = ttk.Frame(self.notebook, padding="10")
@@ -178,7 +190,8 @@ class GUI:
             "period_change": {
                 "percent": float(self.period_threshold_entry.get()),
                 "days": int(self.period_days_entry.get())
-            }
+            },
+            "file_path": self.file_path  # Add file path to user input
         }
 
     def fetch_data(self):

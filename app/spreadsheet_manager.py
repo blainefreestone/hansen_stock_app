@@ -88,7 +88,7 @@ class SpreadSheetManager:
         )
 
         # Create Excel file
-        file_name = f"{user_input['symbol']}_stock_data.xlsx"
+        file_name = user_input["file_path"]
         with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
             df.to_excel(writer, sheet_name='Stock Data')
             workbook = writer.book

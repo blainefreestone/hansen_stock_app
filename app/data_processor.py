@@ -53,10 +53,10 @@ class DataProcessor:
             direction (str): 'positive' or 'negative'.
 
         Returns:
-            Dict[datetime, bool]: Dictionary of dates and boolean indicating if the condition is met.
+            Dict[datetime, bool]: Dictionary of dates and boolean indicating if the date is part of a consecutive change streak.
         """
         sorted_dates = sorted(percent_changes.keys())
-        result = {}
+        result = {date: False for date in sorted_dates}
         
         for i in range(len(sorted_dates) - num_days + 1):
             consecutive = True
@@ -66,7 +66,9 @@ class DataProcessor:
                     consecutive = False
                     break
             
-            result[sorted_dates[i+num_days-1]] = consecutive
+            if consecutive:
+                for j in range(num_days):
+                    result[sorted_dates[i+j]] = True
         
         return result
 

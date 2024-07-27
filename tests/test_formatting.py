@@ -32,15 +32,15 @@ def test_formatting_rule():
 def test_consecutive_change_rule():
     factory = FormattingRuleFactory()
     style = FormatStyle(columns="percent_change", background_color="blue")
-    rule = factory.consecutive_change_rule(2, "positive", "percent_change", style)
+    rule = factory.consecutive_change_rule(3, "positive", "percent_change", style)
     
     result = rule.apply(test_data)
-    
+   
     assert result[datetime(2023, 1, 1)] is None
     assert result[datetime(2023, 1, 2)] is None
-    assert result[datetime(2023, 1, 3)] == style
+    assert result[datetime(2023, 1, 3)] is None
     assert result[datetime(2023, 1, 4)] is None
-    assert result[datetime(2023, 1, 5)] is None
+    assert result[datetime(2023, 1, 5)] == style
     assert result[datetime(2023, 1, 6)] == style
     assert result[datetime(2023, 1, 7)] == style
 

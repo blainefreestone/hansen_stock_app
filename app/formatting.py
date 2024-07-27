@@ -33,10 +33,10 @@ class FormattingRuleFactory:
         return FormattingRule(condition, style)
 
     @staticmethod
-    def threshold_change_rule(percent_threshold: float, columns: Union[str, List[str]], format_style: FormatStyle) -> FormattingRule:
+    def threshold_change_rule(percent_threshold: float, direction: str, columns: Union[str, List[str]], format_style: FormatStyle) -> FormattingRule:
         def condition(data, date):
             percent_changes = DataProcessor.calculate_daily_percent_changes(data)
-            threshold_changes = DataProcessor.check_threshold_change(percent_changes, percent_threshold)
+            threshold_changes = DataProcessor.check_threshold_change(percent_changes, percent_threshold, direction)
             return threshold_changes.get(date, False)
         
         style_dict = format_style.__dict__.copy()

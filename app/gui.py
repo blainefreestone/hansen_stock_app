@@ -73,9 +73,9 @@ class GUI:
         self.daily_threshold_entry.insert(0, "2.5")  # Default value
 
         ttk.Label(daily_frame, text="Direction:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
-        self.daily_direction = tk.StringVar(value="higher")
-        ttk.Radiobutton(daily_frame, text="Higher", variable=self.daily_direction, value="higher").grid(row=1, column=1, sticky=tk.W, padx=5, pady=2)
-        ttk.Radiobutton(daily_frame, text="Lower", variable=self.daily_direction, value="lower").grid(row=2, column=1, sticky=tk.W, padx=5, pady=2)
+        self.daily_direction = tk.StringVar(value="positive")
+        ttk.Radiobutton(daily_frame, text="Higher", variable=self.daily_direction, value="positive").grid(row=1, column=1, sticky=tk.W, padx=5, pady=2)
+        ttk.Radiobutton(daily_frame, text="Lower", variable=self.daily_direction, value="negative").grid(row=2, column=1, sticky=tk.W, padx=5, pady=2)
 
         daily_frame.columnconfigure(1, weight=1)
 

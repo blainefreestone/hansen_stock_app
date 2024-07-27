@@ -59,6 +59,7 @@ class SpreadSheetManager:
         
         threshold_rule = FormattingRuleFactory().threshold_change_rule(
             user_input["daily_threshold"]["percent"],
+            user_input["daily_threshold"]["direction"],
             "percent_change",
             FormatStyle("percent_change", "red" if user_input["daily_threshold"]["direction"] == "higher" else "green", bold=True)
         )

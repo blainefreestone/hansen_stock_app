@@ -73,18 +73,24 @@ class DataProcessor:
         return result
 
     @staticmethod
-    def check_threshold_change(percent_changes: Dict[datetime, float], percent_threshold: float) -> Dict[datetime, bool]:
+    def check_threshold_change(percent_changes: Dict[datetime, float], percent_threshold: float, direction: str) -> Dict[datetime, bool]:
         """
-        Check if daily percent change is higher or lower than a threshold.
+        Check if daily percent change is higher or lower than a threshold in the specified direction.
         
         Args:
             percent_changes (Dict[datetime, float]): Dictionary of dates and their percent changes.
             percent_threshold (float): Threshold for percent change.
+            direction (str): 'positive' or 'negative'.
 
         Returns:
             Dict[datetime, bool]: Dictionary of dates and boolean indicating if the condition is met.
         """
-        return {date: abs(change) >= abs(percent_threshold) for date, change in percent_changes.items()}
+        if direction == 'positive':
+            return {date: change >= percent_threshold for date, change in percent_changes.items()}
+        elif direction == 'negative':
+            return {date: change <= -percent_threshold for date, change in percent_changes.items()}
+        else:
+            raise ValueError("Direction must be either 'positive' or 'negative'")
 
     @staticmethod
     def check_cumulative_change(data: Dict[datetime, Dict[str, float]], num_days: int, percent_threshold: float) -> Dict[datetime, bool]:

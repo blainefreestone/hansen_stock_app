@@ -14,9 +14,10 @@ from app.stock_data_fetcher import StockDataFetcher
 color_map = {
     "red": "FFFF0000",
     "green": "FF00FF00",
-    "yellow": "FFFFFF00",
+    "orange": "FFFFA500",
     "black": "FF000000",
     "lightblue": "FFADD8E6",
+    "yellow": "FFFFFF00"
 }
 
 class SpreadSheetManager:
@@ -50,25 +51,40 @@ class SpreadSheetManager:
         df = df.sort_index()
 
         # Apply formatting rules
-        consecutive_rule = FormattingRuleFactory().consecutive_change_rule(
+        consecutive_rule_positive = FormattingRuleFactory().consecutive_change_rule(
             user_input["consecutive_change"]["days"],
-            user_input["consecutive_change"]["direction"],
+            "positive",
             "close",
-            FormatStyle("close", "yellow", bold=True)
+            FormatStyle("close", "lightblue", bold=True)
         )
-        
-        threshold_rule = FormattingRuleFactory().threshold_change_rule(
+
+        consecutive_rule_negative = FormattingRuleFactory().consecutive_change_rule(
+            user_input["consecutive_change"]["days"],
+            "negative",
+            "close",
+            FormatStyle("close", "orange", bold=True)
+        )
+
+        # Add both positive and negative rules for daily threshold
+        threshold_rule_positive = FormattingRuleFactory().threshold_change_rule(
             user_input["daily_threshold"]["percent"],
-            user_input["daily_threshold"]["direction"],
+            "positive",
             "percent_change",
-            FormatStyle("percent_change", "red" if user_input["daily_threshold"]["direction"] == "higher" else "green", bold=True)
+            FormatStyle("percent_change", "green", bold=True)
+        )
+
+        threshold_rule_negative = FormattingRuleFactory().threshold_change_rule(
+            user_input["daily_threshold"]["percent"],
+            "negative",
+            "percent_change",
+            FormatStyle("percent_change", "red", bold=True)
         )
         
         cumulative_rule = FormattingRuleFactory().cumulative_change_rule(
             user_input["period_change"]["days"],
             user_input["period_change"]["percent"],
             ["open", "high", "low"],
-            FormatStyle(["open", "high", "low"], "lightblue", bold=True)
+            FormatStyle(["open", "high", "low"], "yellow", bold=True)
         )
 
         # Create Excel file
@@ -79,7 +95,7 @@ class SpreadSheetManager:
             worksheet = writer.sheets['Stock Data']
 
             # Apply formatting
-            for rule in [consecutive_rule, threshold_rule, cumulative_rule]:
+            for rule in [cumulative_rule, consecutive_rule_positive, consecutive_rule_negative, threshold_rule_positive, threshold_rule_negative]:
                 formatting = rule.apply(stock_data_filtered)
                 for date, style in formatting.items():
                     if style:
@@ -113,11 +129,9 @@ class SpreadSheetManager:
             subprocess.call([opener, file_name])
 
     def process_and_open(self, user_input: Dict[str, Any]):
-        # try:
-        #     file_name = self.create_excel_file(user_input)
-        #     self.open_excel_file(file_name)
-        # except Exception as e:
-        #     print(f"An error occurred: {str(e)}")
-        #     # You might want to show this error in the GUI instead of printing
-        file_name = self.create_excel_file(user_input)
-        self.open_excel_file(file_name)
+        try:
+            file_name = self.create_excel_file(user_input)
+            self.open_excel_file(file_name)
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+            # You might want to show this error in the GUI instead of printing

@@ -3,14 +3,30 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from tkcalendar import DateEntry
 from datetime import date, timedelta
+import os
+
+def get_api_key(file_path='api_key.txt'):
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            return file.read().strip()
+    return None
+
+def save_api_key(api_key, file_path='api_key.txt'):
+    with open(file_path, 'w') as file:
+        file.write(api_key)
 
 class GUI:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Josh Hansen's Epic Stock Tracker")
         self.root.geometry("400x500")
+        
+        self.api_key = get_api_key()
 
-        self.spreadsheet_manager = SpreadSheetManager("B3DCQB3M4469Z8IV")
+        if not self.api_key:
+            self.prompt_for_api_key()
+
+        self.spreadsheet_manager = SpreadSheetManager(self.api_key)
 
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill=tk.BOTH, expand=True)
@@ -19,6 +35,23 @@ class GUI:
         self.create_consecutive_change_frame()
         self.create_daily_threshold_frame()
         self.create_period_change_frame()
+        self.create_api_key_frame()
+
+    def prompt_for_api_key(self):
+        api_key_prompt = tk.Toplevel(self.root)
+        api_key_prompt.title("Enter API Key")
+        
+        ttk.Label(api_key_prompt, text="API Key:").grid(row=0, column=0, padx=10, pady=10)
+        api_key_entry = ttk.Entry(api_key_prompt)
+        api_key_entry.grid(row=0, column=1, padx=10, pady=10)
+        
+        def save_key():
+            self.api_key = api_key_entry.get().strip()
+            save_api_key(self.api_key)
+            api_key_prompt.destroy()
+        
+        ttk.Button(api_key_prompt, text="Save", command=save_key).grid(row=1, column=0, columnspan=2, pady=10)
+        self.root.wait_window(api_key_prompt)
 
     def create_basic_input_frame(self):
         basic_frame = ttk.Frame(self.notebook, padding="10")
@@ -85,6 +118,17 @@ class GUI:
         self.period_days_entry.insert(0, "5")  # Default value
 
         period_frame.columnconfigure(1, weight=1)
+
+    def create_api_key_frame(self):
+        api_key_frame = ttk.Frame(self.notebook, padding="10")
+        self.notebook.add(api_key_frame, text="API Key")
+
+        ttk.Label(api_key_frame, text="Current API Key:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
+        self.api_key_label = ttk.Label(api_key_frame, text=self.api_key)
+        self.api_key_label.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+
+        ttk.Button(api_key_frame, text="Change API Key", command=self.prompt_for_api_key).grid(row=1, column=0, columnspan=2, pady=10)
+        api_key_frame.columnconfigure(1, weight=1)
 
     def validate_inputs(self):
         if not self.symbol_entry.get():

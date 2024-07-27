@@ -55,13 +55,9 @@ class GUI:
         self.cons_days_entry = ttk.Entry(cons_frame)
         self.cons_days_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
         self.cons_days_entry.insert(0, "5")  # Default value
-
-        ttk.Label(cons_frame, text="Direction:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
-        self.cons_direction = tk.StringVar(value="positive")
-        ttk.Radiobutton(cons_frame, text="Positive", variable=self.cons_direction, value="positive").grid(row=1, column=1, sticky=tk.W, padx=5, pady=2)
-        ttk.Radiobutton(cons_frame, text="Negative", variable=self.cons_direction, value="negative").grid(row=2, column=1, sticky=tk.W, padx=5, pady=2)
-
+        
         cons_frame.columnconfigure(1, weight=1)
+
 
     def create_daily_threshold_frame(self):
         daily_frame = ttk.Frame(self.notebook, padding="10")
@@ -71,11 +67,6 @@ class GUI:
         self.daily_threshold_entry = ttk.Entry(daily_frame)
         self.daily_threshold_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
         self.daily_threshold_entry.insert(0, "2.5")  # Default value
-
-        ttk.Label(daily_frame, text="Direction:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
-        self.daily_direction = tk.StringVar(value="positive")
-        ttk.Radiobutton(daily_frame, text="Higher", variable=self.daily_direction, value="positive").grid(row=1, column=1, sticky=tk.W, padx=5, pady=2)
-        ttk.Radiobutton(daily_frame, text="Lower", variable=self.daily_direction, value="negative").grid(row=2, column=1, sticky=tk.W, padx=5, pady=2)
 
         daily_frame.columnconfigure(1, weight=1)
 
@@ -133,12 +124,12 @@ class GUI:
             "start_date": self.start_date.get_date(),
             "end_date": self.end_date.get_date(),
             "consecutive_change": {
-                "days": int(self.cons_days_entry.get()),
-                "direction": self.cons_direction.get()
+                "days": int(self.cons_days_entry.get())
+                # Removed "direction"
             },
             "daily_threshold": {
-                "percent": float(self.daily_threshold_entry.get()),
-                "direction": self.daily_direction.get()
+                "percent": float(self.daily_threshold_entry.get())
+                # Removed "direction"
             },
             "period_change": {
                 "percent": float(self.period_threshold_entry.get()),

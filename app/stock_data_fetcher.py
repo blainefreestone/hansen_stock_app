@@ -8,6 +8,7 @@ class StockDataFetcher:
     def fetch_daily_stock_data(self, stock_symbol: str, date_start: datetime, date_end: datetime):
         function = 'TIME_SERIES_DAILY'
         url = f'https://www.alphavantage.co/query?function={function}&symbol={stock_symbol}&outputsize=full&apikey={self.api_key}'
+        # url = f'https://www.alphavantage.co/query?function={function}&symbol={stock_symbol}&apikey=demo'
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
@@ -18,6 +19,7 @@ class StockDataFetcher:
                 }
                 for date, values in time_series.items():
                     date = datetime.strptime(date, '%Y-%m-%d')
+                    date = datetime.date(date)
                     if date_start <= date <= date_end:
                         stock_data[date] = {
                             "open": float(values['1. open']),

@@ -53,8 +53,8 @@ class SpreadSheetManager:
         consecutive_rule = FormattingRuleFactory().consecutive_change_rule(
             user_input["consecutive_change"]["days"],
             user_input["consecutive_change"]["direction"],
-            "percent_change",
-            FormatStyle("percent_change", "yellow", bold=True)
+            "close",
+            FormatStyle("close", "yellow", bold=True)
         )
         
         threshold_rule = FormattingRuleFactory().threshold_change_rule(
@@ -66,8 +66,8 @@ class SpreadSheetManager:
         cumulative_rule = FormattingRuleFactory().cumulative_change_rule(
             user_input["period_change"]["days"],
             user_input["period_change"]["percent"],
-            ["open", "high", "low", "close"],
-            FormatStyle(["open", "high", "low", "close"], "lightblue", bold=True)
+            ["open", "high", "low"],
+            FormatStyle(["open", "high", "low"], "lightblue", bold=True)
         )
 
         # Create Excel file
@@ -83,7 +83,7 @@ class SpreadSheetManager:
                 for date, style in formatting.items():
                     if style:
                         row = df.index.get_loc(date) + 2  # +2 because Excel is 1-indexed and we have a header row
-                        cols = [df.columns.get_loc(col) + 1 for col in style.columns] if isinstance(style.columns, list) else [df.columns.get_loc(style.columns) + 1]
+                        cols = [df.columns.get_loc(col) + 2 for col in style.columns] if isinstance(style.columns, list) else [df.columns.get_loc(style.columns) + 2]
                         for col in cols:
                             cell = worksheet.cell(row=row, column=col)
                             cell.fill = PatternFill(start_color=color_map[style.background_color], end_color=color_map[style.background_color], fill_type="solid")

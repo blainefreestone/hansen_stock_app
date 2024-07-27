@@ -16,6 +16,7 @@ color_map = {
     "green": "FF00FF00",
     "yellow": "FFFFFF00",
     "black": "FF000000",
+    "lightblue": "FFADD8E6",
 }
 
 class SpreadSheetManager:
@@ -98,7 +99,7 @@ class SpreadSheetManager:
                             max_length = len(cell.value)
                     except:
                         pass
-                adjusted_width = (max_length + 2)
+                adjusted_width = max(max_length + 2, 12)  # Ensure minimum width of 12
                 worksheet.column_dimensions[get_column_letter(column[0].column)].width = adjusted_width
 
         return file_name

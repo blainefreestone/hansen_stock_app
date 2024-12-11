@@ -4,3 +4,6 @@ venv
 .pytest_cache
 */__pycache__
 api_key.txt
+build
+dist
+hansen_stock_app*
